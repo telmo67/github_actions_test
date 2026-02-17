@@ -28,7 +28,8 @@ jobs:
 
       - name: Install pylint
         run: |
-          pip install pylint 
+          pip install pylint
+          pip install -r requirements.txt 
 
       - name: Analysing the code with pylint
         run: |
