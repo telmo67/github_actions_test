@@ -1,0 +1,45 @@
+name: Test base workflow
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+
+  gitlint: 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0  
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with: 
+          python-version: "3.11"
+
+      - name: Install gitlint
+        run: |
+          pip install gitlint
+      
+      # Pull request: Lint commits in the PR range
+      - name: Lint PR commits
+        if: github.event_name == 'pull_request'
+        run: |
+          gitlint --commits "${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
+      
+      # Push to main: Lint commit(s) included in the push
+      - name: Lint pushed commits
+        if: github.event_name == 'push'
+        run: |
+          gitlint --commits "${{ github.event.before }}..${{ github.sha }}"
+
+      # Manual Run: Lint the last 10 commits on the check-out branch
+      - name: Lint recent 10 commits (manual)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          gitlint --commits "HEAD~10..HEAD"    
