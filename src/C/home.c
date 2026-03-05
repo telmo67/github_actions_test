@@ -6,24 +6,24 @@
 
 int main() {
 
-    home_t *myHouse;
-    char myCity[] = "Guimarães";
-    char myCountry[] = "Portugal"; 
+  home_t *myHouse;
+  char myCity[] = "Guimarães";
+  char myCountry[] = "Portugal";
 
-    myHouse->city = malloc(sizeof(myCity));
-    if (myHouse->city == NULL) {
-        return 1;
-    }
-    strcpy(myHouse->city, myCity);
+  myHouse->city = malloc(sizeof(myCity));
+  if (myHouse->city == NULL) {
+    return 1;
+  }
+  strcpy(myHouse->city, myCity);
 
-    myHouse->country = malloc(sizeof(myCountry));
-    if (myHouse->country == NULL) {
-        free(myHouse->city);
-        return 1;
-    }
-    strcpy(myHouse->country, myCountry);
-
-    free(myHouse->country);
+  myHouse->country = malloc(sizeof(myCountry));
+  if (myHouse->country == NULL) {
     free(myHouse->city);
-    return 0;
+    return 1;
+  }
+  strcpy(myHouse->country, myCountry);
+
+  free(myHouse->country);
+  free(myHouse->city);
+  return 0;
 }
