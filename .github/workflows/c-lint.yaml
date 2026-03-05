@@ -1,0 +1,40 @@
+name: C_Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    
+jobs:
+
+  c-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0 
+
+      - name: Install C lint tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-format cppcheck
+
+      - name: Check formatting
+        run: |
+          clang-format --dry-run --Werror $(git ls-files '*.c' '*.h') 
+          cppcheck \
+            --enable=all \
+            --std=c11 \
+            --error-exitcode=1 \
+            --suppress=missingIncludeSystem \
+            --inline-suppr \
+            --quiet \
+            src/C/ inc/
+
+      - name: Compile check
+        run: |
+          gcc -Wall -Wextra -Werror -fsyntax-only $(git ls-files '*.c')
